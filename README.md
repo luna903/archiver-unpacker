@@ -29,6 +29,3 @@ To compress a directory or file, provide the source path and the desired output 
 ```bash
 python archiver.py test_data archive.tar.zst
 
-
----
-<img width="1497" height="734" alt="5a68f1c858da308ec428bb12e9f121b6" src="https://github.com/user-attachments/assets/521f7cc5-c140-4e6c-872d-d3cd762bd7db" />
