@@ -1,122 +1,31 @@
-# archiver.py — Утилита архивации и распаковки
+# Python Console Archiver Utility
 
-Консольная утилита для сжатия и распаковки файлов и директорий.  
-Поддерживает алгоритмы **Zstandard (`.zst`)** и **bzip2 (`.bz2`)**.  
-Использует **исключительно стандартную библиотеку Python** (3.14+).
+A robust console utility developed for archiving and extracting files/directories using `zstd` and `bz2` algorithms. It leverages the new `compression.zstd` module introduced in the Python 3.14 standard library.
 
----
+## Features
+- **Automatic Algorithm Routing:** Dynamically selects the compression/extraction algorithm (`zstd` or `bz2`) based on the target file extension.
+- **Directory Support:** Automatically utilizes `tarfile` to package directories before compression.
+- **Stream Pipeline:** Uses file object mapping (`fileobj`) for stream processing, ensuring $O(1)$ memory complexity when handling large datasets.
+- **Security:** Implements `filter='data'` during extraction to prevent path traversal attacks.
 
-## Требования
+## Prerequisites
+- **Python 3.14** or higher (requires standard library `compression.zstd`).
 
-| Версия Python | Поддержка .zst                              | Поддержка .bz2 |
-|---------------|---------------------------------------------|----------------|
-| 3.14+         | `compression.zstd` (встроенный, нативный)   | встроенный  |
+## Command Line Arguments
 
-Установка дополнительных зависимостей **не требуется**.
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `source` | Positional | Path to the source file or directory. |
+| `output` | Positional | Path to the output archive (must end with `.zst` or `.bz2`) or extraction target directory. |
+| `-x`, `--extract`| Optional | Flag to enable extraction mode. If omitted, compression mode is used. |
+| `-h`, `--help` | Optional | Show the help message and exit. |
 
----
+## Usage Examples
 
-## Синтаксис
+### 1. Archiving (Compression)
+To compress a directory or file, provide the source path and the desired output archive name.
 
-```
-python archiver.py [-h] [-x] [-l 1-9] [--version] source output
-```
-
-### Аргументы
-
-| Аргумент        | Описание |
-|-----------------|----------|
-| `source`        | **Режим сжатия:** путь к файлу или директории для архивации.<br>**Режим распаковки** (`-x`): путь к архиву (`.zst` или `.bz2`). |
-| `output`        | **Режим сжатия:** путь к создаваемому архиву (`.zst` или `.bz2`).<br>**Режим распаковки** (`-x`): директория для извлечения файлов. |
-
-### Ключи
-
-| Ключ               | Описание |
-|--------------------|----------|
-| `-x`, `--extract`  | Режим распаковки. По умолчанию — режим сжатия. |
-| `-l`, `--level`    | Уровень сжатия для bzip2 (от `1` = быстрее до `9` = лучше). По умолчанию 9. |
-| `--version`        | Показать версию и активный zstd-бэкенд. |
-
----
-
-## Примеры запуска
-
-### Сжатие
-
+**Compressing a directory using zstd:**
 ```bash
-# Сжать один файл в формат zstd
-python archiver.py report.pdf archive.zst
+python archiver.py test_data archive.tar.zst
 
-# Сжать директорию в формат bzip2
-python archiver.py ./my_project backup.bz2
-
-# Сжать с минимальным уровнем сжатия bzip2 (быстрее)
-python archiver.py large_dir fast_backup.bz2 --level 1
-
-# Сжать директорию в zstd
-python archiver.py ./src release.zst
-```
-
-### Распаковка
-
-```bash
-# Распаковать .zst архив в директорию
-python archiver.py -x archive.zst ./output
-
-# Распаковать .bz2 архив
-python archiver.py --extract backup.bz2 ./restored
-
-# Распаковать в текущую директорию
-python archiver.py -x release.zst .
-```
-
----
-
-## Определение формата
-
-Формат архива определяется **автоматически по расширению** целевого файла:
-
-| Расширение | Алгоритм  | Контейнер  |
-|------------|-----------|------------|
-| `.zst`     | Zstandard | tar + zstd |
-| `.bz2`     | bzip2     | tar + bz2  |
-
-Если источник — **директория**, перед сжатием она автоматически упаковывается через `tarfile`.
-
----
-
-## Бэкенды zstd (выбираются автоматически)
-
-| Бэкенд              | Условие активации                        |
-|---------------------|------------------------------------------|
-| `compression.zstd`  | Python 3.14+ |
-| `zstandard`         | Пакет `zstandard` установлен             |
-| `zlib-fallback`     | Резервный вариант через zlib             |
-
-> Архивы в `zlib-fallback` режиме совместимы только с этой утилитой.  
-> Для полной совместимости со стандартным форматом zstd используйте Python 3.14+.
-
----
-
-## Вывод программы
-
-```
-Сжатие:  ./my_project  →  backup.zst  [zst]
-Успешно! Размер архива: 18,432 байт
-Время выполнения: 0.0312 сек
-```
-
-```
-Распаковка:  backup.zst  →  ./restored  [zst]
-Успешно! Файлы извлечены в: /home/user/restored
-Время выполнения: 0.0089 сек
-```
-
----
-
-## Структура проекта
-
-```
-archiver.py   — основная утилита
-README.md     — документация
-```
