@@ -17,13 +17,19 @@
 ## Примеры использования
 ### 1. Архивация (сжатие)
 Чтобы сжать директорию или файл, укажите исходный путь и желаемое имя выходного архива.
+
 **Создание тестовых файлов**
+
 <img width="1497" height="734" alt="5a68f1c858da308ec428bb12e9f121b6" src="https://github.com/user-attachments/assets/03bc0731-e2d5-474d-8c9e-535a0b43a3cc" />
+
 **Сжатие директории с использованием zstd:**
+
 ```bash
 python archiver.py test_data archive.tar.zst
 ```
+
 <img width="2007" height="1080" alt="image" src="https://github.com/user-attachments/assets/5f9a684e-4f8a-4a05-b143-1cf1d262fe96" />
+
 **Распаковка файла**
 ```bash
 python archiver.py -x archive.tar.zst out_folder
